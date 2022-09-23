@@ -1,0 +1,38 @@
+{
+  "name": "ljvue3template",
+  "private": true,
+  "version": "0.0.0",
+  "main": "app.tsx",
+  "scripts": {
+    "dev": "vite --host --mode development",
+    "build": "vue-tsc --noEmit --skipLibCheck && vite build",
+    "preview": "vite preview",
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src",
+    "format": "prettier . --write"
+  },
+  "dependencies": {
+    "@typescript-eslint/parser": "^5.37.0",
+    "axios": "^0.27.2",
+    "mitt": "^3.0.0",
+    "pinia": "^2.0.22",
+    "vue": "^3.2.37",
+    "vue-axios": "^3.4.1",
+    "vue-router": "^4.1.5"
+  },
+  "devDependencies": {
+    "@types/node": "^18.7.18",
+    "@vitejs/plugin-vue": "^3.1.0",
+    "@vitejs/plugin-vue-jsx": "^2.0.1",
+    "eslint": "^8.23.1",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-vue": "^9.5.1",
+    "node-sass": "^7.0.3",
+    "prettier": "2.7.1",
+    "sass": "^1.54.9",
+    "sass-loader": "^13.0.2",
+    "typescript": "^4.6.4",
+    "vite": "^3.1.0",
+    "vite-plugin-eslint": "^1.8.1",
+    "vue-tsc": "^0.40.4"
+  }
+}
