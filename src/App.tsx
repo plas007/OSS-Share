@@ -19,36 +19,125 @@ interface TabbarInterface {
   icon: string;
 }
 
+interface NavigationOptions {
+  showNavigationBar?: boolean;
+  showBack?: boolean;
+  title?: string;
+}
+
 export default defineComponent({
   name: 'App',
   components: { Tabbar },
 
   setup() {
     /**
-     * tab发生变化
+     * 全局的页面路径对象
+     */
+    const routes = router.getRoutes();
+    const getDefaultName = (): string => {
+      let name = 'OSS';
+      try {
+        name = routes.filter((item) => item.meta && item.meta.name)[0].meta.name as string;
+      } catch (error) {
+        console.log(error);
+      }
+      return name;
+    };
+    /**
+     * 全局默认首页名称
+     */
+    const defaultPageName: string = getDefaultName();
+    // 需要缓存的页面(tab页)
+    const keepAliveInclude = ref<Array<string>>(['Latest', 'Home', 'Upload']);
+    const showTabbar = ref<boolean>(true);
+    /**
+     * 全局导航栏数据存储
+     */
+    const navigationsMap = reactive<Record<string, NavigationOptions>>({});
+    /**
+     * 当前页面导航栏内容配置
+     */
+    const navigationOptions = reactive<NavigationOptions>({
+      showNavigationBar: true,
+      showBack: false,
+      title: defaultPageName,
+    });
+    /**
+     * tabbar栏显示内容
+     */
+    const tabbarList = router
+      .getRoutes()
+      .filter((item) => item.meta.tabbar)
+      .map((item, index): TabbarInterface => {
+        return {
+          id: index + 1,
+          name: (item.meta.name as string) || '',
+          path: item.path,
+          icon: '',
+        };
+      });
+    /**
+     * tabbar发生变化
      * @param res
      */
     const onTabchange = (tabbar: TabbarInterface) => {
-      console.log(tabbar);
-      router.replace({
-        path: tabbar.path,
-      });
-      setTitle(tabbar.name);
+      console.log(tabbar, navigationsMap);
+      router
+        .replace({
+          path: tabbar.path,
+        })
+        .then(() => {
+          const name = router.currentRoute.value.name
+            ? router.currentRoute.value.meta && router.currentRoute.value.meta.name
+              ? router.currentRoute.value.meta.name
+              : router.currentRoute.value.name
+            : defaultPageName;
+          const navigation = navigationsMap[name as string] as NavigationOptions;
+          console.log('navigation:', navigation);
+          if (navigation) {
+            setNavigation(navigation);
+          } else {
+            setNavigation({
+              showNavigationBar: true,
+              showBack: false,
+              title: tabbar.name,
+            });
+          }
+        });
     };
     /**
      * 更新导航栏标题统一方法
      */
-    const setTitle = (name: string) => {
-      if (titleMap[router.currentRoute.value.name as string]) {
-        title.value = titleMap[router.currentRoute.value.name as string];
+    const setNavigation = (navigationOpts: NavigationOptions) => {
+      let { title, showNavigationBar, showBack } = navigationOpts;
+      const name = router.currentRoute.value.name
+        ? router.currentRoute.value.meta && router.currentRoute.value.meta.name
+          ? router.currentRoute.value.meta.name
+          : router.currentRoute.value.name
+        : defaultPageName;
+      if (title && typeof showBack === 'boolean' && typeof showNavigationBar === 'boolean') {
+        navigationOptions.title = title;
+        navigationOptions.showBack = showBack;
+        navigationOptions.showNavigationBar = showNavigationBar;
       } else {
-        title.value = name;
-        if (router.currentRoute.value.name) {
-          titleMap[router.currentRoute.value.name as string] = name;
+        const navigation = navigationsMap[name as string] ?? { title: defaultPageName, showNavigationBar: true, showBack: false };
+        if (title) {
+          navigationOptions.title = title;
         } else {
-          titleMap[router.getRoutes()[0].name as string] = name;
+          navigationOptions.title = name as string;
+        }
+        if (typeof showBack === 'boolean') {
+          navigationOptions.showBack = showBack;
+        } else {
+          navigationOptions.showBack = navigation.showBack;
+        }
+        if (typeof showNavigationBar === 'boolean') {
+          navigationOptions.showNavigationBar = showNavigationBar;
+        } else {
+          navigationOptions.showNavigationBar = navigation.showNavigationBar;
         }
       }
+      navigationsMap[name as string] = { ...navigationOptions };
     };
     /**
      * 导航栏返回
@@ -87,32 +176,19 @@ export default defineComponent({
      * @param action
      */
     const changeNavigation = (action: any): void => {
+      console.log(router.getRoutes());
       console.log('changeNavigation', action);
-      // 设置是否显示导航栏
-      if (action.showNavigation === false) {
-        showNavigationBar.value = false;
-      } else if (action.showNavigation === true) {
-        showNavigationBar.value = true;
-      }
-      // 设置是否显示返回按钮
-      if (action.showBack === false) {
-        showBack.value = false;
-      } else if (action.showBack === true) {
-        showBack.value = true;
-      }
-      // 设置标题
-      if (action.title) {
-        setTitle(action.title);
-      } else {
-        // 如果为空，取当前页面路径的name
-        setTitle(router.currentRoute.value.name as string);
-      }
       // 设置是否显示tabbar
       if (action.showTabbar === false) {
         showTabbar.value = false;
       } else if (action.showBack === true) {
         showTabbar.value = true;
       }
+      setNavigation({
+        showBack: action.showBack,
+        title: action.title,
+        showNavigationBar: action.showNavigationBar,
+      });
     };
 
     onMounted(() => {
@@ -121,7 +197,11 @@ export default defineComponent({
        */
       bus.on('back', backAction);
       bus.on('changeNavigation', changeNavigation);
-      setTitle('最近');
+      setNavigation({
+        showNavigationBar: true,
+        showBack: false,
+        title: tabbarList[0].name,
+      });
     });
 
     /**
@@ -131,27 +211,9 @@ export default defineComponent({
       bus.off('back', backAction);
       bus.on('changeNavigation', changeNavigation);
     });
-    // 需要缓存的页面(tab页)
-    const keepAliveInclude = ref<Array<string>>(['Latest', 'Home', 'Upload']);
-    const showNavigationBar = ref<boolean>(true);
-    const showTabbar = ref<boolean>(true);
-    const showBack = ref<boolean>(false);
-    const title = ref<string>('最近');
-    const titleMap = reactive<Record<string, string>>({});
-    const tabbarList = router
-      .getRoutes()
-      .filter((item) => item.meta.tabbar)
-      .map((item, index): TabbarInterface => {
-        return {
-          id: index + 1,
-          name: (item.meta.name as string) || '',
-          path: item.path,
-          icon: '',
-        };
-      });
     return () => (
-      <div class={['app-box', showNavigationBar.value ? 'padding-top' : '', showTabbar.value ? 'padding-bottom' : '']}>
-        {showNavigationBar.value && <NavigationBar showBack={showBack.value} title={title.value} class="navigationbar" onBack={onBack} />}
+      <div class={['app-box', navigationOptions.showNavigationBar ? 'padding-top' : '', showTabbar.value ? 'padding-bottom' : '']}>
+        {navigationOptions.showNavigationBar && <NavigationBar showBack={navigationOptions.showBack} title={navigationOptions.title} class="navigationbar" onBack={onBack} />}
         <RouterView>
           {({ Component }: { Component: any }) => {
             return (

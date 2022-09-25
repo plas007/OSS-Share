@@ -34,7 +34,7 @@ const data = reactive<Data>({
 const fileList = toRef(data, 'fileList');
 const nowPath = toRef(data, 'nowPath');
 
-const getFileList = (path: string = '') => {
+const getFileList = (path: string = '', back: boolean = false) => {
   ljRequest
     .get({
       url: `/ossApi/getAllFiles.json`,
@@ -52,7 +52,7 @@ const getFileList = (path: string = '') => {
       }
     })
     .finally(() => {
-      onChangePath();
+      onChangePath(back);
     });
 };
 
@@ -73,11 +73,21 @@ const onFileItem = (item: FileItem, index: number) => {
 /**
  * 页面层级发生了变化
  */
-const onChangePath = () => {
-  bus.emit('changeNavigation', {
-    showBack: nowPath.value.length > 1,
-    title: nowPath.value[nowPath.value.length - 1],
-  });
+const onChangePath = (back: boolean = false) => {
+  let len = nowPath.value.length;
+  if (len > 1) {
+    bus.emit('changeNavigation', {
+      showBack: len > 1,
+      title: nowPath.value[len - 1],
+    });
+  } else {
+    // 返回到第一级
+    back &&
+      bus.emit('changeNavigation', {
+        showBack: false,
+        title: '',
+      });
+  }
 };
 
 /**
@@ -102,7 +112,7 @@ const backAction = (action: any) => {
         hasChangeTag = true;
       }
     }
-    if (hasChangeTag) getFileList(nowPath.value.join('\\'));
+    if (hasChangeTag) getFileList(nowPath.value.join('\\'), hasChangeTag);
   }
 };
 onMounted(() => {
