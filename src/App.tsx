@@ -1,5 +1,5 @@
 // App.tsx
-import { defineComponent, KeepAlive, onBeforeUnmount, onMounted, reactive, ref, Transition } from 'vue';
+import { defineComponent, KeepAlive, onBeforeUnmount, onMounted, onBeforeMount, reactive, ref, Transition } from 'vue';
 import { RouterLink, RouterView } from 'vue-router';
 import './style/app.scss';
 import Tabbar from '@/components/Tabbar.vue';
@@ -76,6 +76,11 @@ export default defineComponent({
           icon: '',
         };
       });
+    /**
+     * tabbar子组件
+     */
+    const tabbarRef = ref(null);
+    const defaultIdx = ref<number>(0);
     /**
      * tabbar发生变化
      * @param res
@@ -191,17 +196,35 @@ export default defineComponent({
       });
     };
 
+    const initTools = () => {
+      const path: string = location.hash.split('?')[0].substring(1);
+
+      for (let i = 0; i < tabbarList.length; i++) {
+        let tab = tabbarList[i];
+        if (path === tab.path) {
+          setNavigation({
+            showNavigationBar: true,
+            showBack: false,
+            title: tab.name,
+          });
+          defaultIdx.value = i;
+          return;
+        }
+      }
+      setNavigation({
+        showNavigationBar: true,
+        showBack: false,
+        title: tabbarList[0].name,
+      });
+    };
+
     onMounted(() => {
       /**
        * 下面是全局事件监听
        */
       bus.on('back', backAction);
       bus.on('changeNavigation', changeNavigation);
-      setNavigation({
-        showNavigationBar: true,
-        showBack: false,
-        title: tabbarList[0].name,
-      });
+      initTools();
     });
 
     /**
@@ -225,7 +248,7 @@ export default defineComponent({
             );
           }}
         </RouterView>
-        {showTabbar.value && <Tabbar onChange={onTabchange} tabbarList={tabbarList} class="tabbar" />}
+        {showTabbar.value && <Tabbar defaultIdx={defaultIdx} onChange={onTabchange} tabbarList={tabbarList} class="tabbar" />}
       </div>
     );
   },

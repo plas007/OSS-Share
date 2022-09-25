@@ -9,9 +9,11 @@ interface Tabbar {
 }
 interface Props {
   tabbarList: Array<Tabbar>;
+  selectedIdx?: number;
+  defaultIdx?: number;
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   tabbarList: () => [
     {
       id: 1,
@@ -26,8 +28,10 @@ withDefaults(defineProps<Props>(), {
       icon: '',
     },
   ],
+  selectedIdx: -1,
+  defaultIdx: 0,
 });
-const selected = ref<number>(0);
+const selected = ref<number>(props.defaultIdx);
 
 /**
  * 点击了tabbar栏
@@ -42,11 +46,33 @@ const onTabItem = (idx: number, item: Tabbar) => {
     emits('change', { ...item, listIdx: idx });
   }
 };
+/**
+ * 设置选中tabbar的item的方法，会触发change事件
+ */
+const changeTabItem = (idx: number) => {
+  onTabItem(idx, props.tabbarList[idx]);
+};
+/**
+ * 设置默认选中tabbar的item的方法，不触发change事件
+ */
+const setTabItemIndex = (idx: number) => {
+  selected.value = idx;
+};
+/**
+ * 将子组件方法暴露给父组件
+ */
+defineExpose({ changeTabItem, setTabItemIndex });
 </script>
 
 <template>
   <div class="barBox">
-    <div v-for="(item, index) in tabbarList" :key="index" class="tabItemBox" :class="selected === index ? 'selected' : ''" @click="onTabItem(index, item)">
+    <div
+      v-for="(item, index) in tabbarList"
+      :key="index"
+      class="tabItemBox"
+      :class="(selectedIdx > -1 && selectedIdx === index) || selected === index ? 'selected' : ''"
+      @click="onTabItem(index, item)"
+    >
       <div class="tabItem">{{ item.name }}</div>
     </div>
   </div>
