@@ -1,4 +1,16 @@
 /**
+ * 是否是安卓
+ */
+export function isAndroid() {
+  return navigator.userAgent.indexOf('Android') > -1 || navigator.userAgent.indexOf('Adr') > -1; //android终端
+}
+/**
+ * 是否是iOS
+ */
+export function isiOS() {
+  return !!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+}
+/**
  *  判断当前入口是PC端还是移动端APP端
  * @returns boolean
  */

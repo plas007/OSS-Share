@@ -1,4 +1,4 @@
-import { Toast } from '@/components/lib/Toast';
+import { Toast } from '@/libs/Toast';
 
 /**
  * 复制多行内容到粘贴板

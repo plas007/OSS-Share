@@ -7,10 +7,12 @@ $navigation-height: 2.5rem;
 // /*全局去除默认样式*/
 * {
   word-break: break-all;
-  // padding: 0;
-  // margin: 0;
-  // box-sizing: border-box;
-  // font-size: 16px;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-size: 16px;
+  border: none;
+  padding: none;
 }
 
 body {
@@ -131,16 +133,16 @@ p {
 //   border-spacing: 0;
 // }
 
-// /*去除input[type=number]加减号*/
-// /* 谷歌 */
-// input::-webkit-outer-spin-button,
-// input::-webkit-inner-spin-button {
-//   -webkit-appearance: none;
-//   appearance: none;
-//   margin: 0;
-// }
+/*去除input[type=number]加减号*/
+/* 谷歌 */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
 
-// /* 火狐 */
-// input {
-//   -moz-appearance: textfield;
-// }
+/* 火狐 */
+input {
+  -moz-appearance: textfield;
+}

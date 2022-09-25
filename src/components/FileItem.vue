@@ -204,6 +204,7 @@ const onClick = (e: any) => {
     height: auto;
   }
   .fileName {
+    font-size: 0.8rem;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
