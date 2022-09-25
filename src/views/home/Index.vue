@@ -8,6 +8,7 @@ export default {
 import { ref, reactive, toRef, onMounted, onBeforeUnmount } from 'vue';
 import ljRequest from '../../request';
 import bus from '@/libs/bus';
+import FileItemVue from '@/components/FileItem.vue';
 interface Props {
   msg?: string;
   labels?: string[];
@@ -127,20 +128,7 @@ onBeforeUnmount(() => {
 <template>
   <div class="folderBox">
     <div v-if="fileList.length > 0" class="conetntBox">
-      <div v-for="(item, index) in fileList" :key="index" class="folderItem" @click="onFileItem(item, index)">
-        <svg t="1663852047589" class="folderIcon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="11703">
-          <path
-            d="M885.333333 168.533333h-448L341.333333 110.933333c-6.4-4.266667-14.933333-6.4-21.333333-6.4H134.4c-51.2 0-93.866667 42.666667-93.866667 93.866667v622.933333c0 51.2 42.666667 93.866667 93.866667 93.866667h750.933333c51.2 0 93.866667-42.666667 93.866667-93.866667V262.4c0-51.2-40.533333-93.866667-93.866667-93.866667z m-738.133333 21.333334h160l96 57.6c6.4 4.266667 14.933333 6.4 21.333333 6.4h445.866667c12.8 0 21.333333 8.533333 21.333333 21.333333V298.666667c0 12.8-8.533333 21.333333-21.333333 21.333333h-725.333333c-12.8 0-21.333333-8.533333-21.333334-21.333333V211.2c2.133333-10.666667 12.8-21.333333 23.466667-21.333333z"
-            fill="#A1A9F1"
-            p-id="11704"
-            data-spm-anchor-id="a313x.7781069.0.i0"
-            class="selected"
-          ></path>
-        </svg>
-        <div>
-          {{ item.name }}
-        </div>
-      </div>
+      <FileItemVue v-for="(item, index) in fileList" :key="index" :file-item="item" @click="onFileItem(item, index)" />
     </div>
     <div v-else>
       <p>暂无内容</p>
@@ -155,20 +143,6 @@ onBeforeUnmount(() => {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-  }
-  .folderItem {
-    margin-bottom: 5vw;
-    width: 33.3%;
-    height: auto;
-    text-align: center;
-    font-size: 0.8rem;
-    &:active {
-      opacity: 0.5;
-    }
-    .folderIcon {
-      width: 68%;
-      height: auto;
-    }
   }
 }
 </style>

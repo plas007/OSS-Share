@@ -218,6 +218,9 @@ export default defineComponent({
       });
     };
 
+    /**
+     * 钩子函数
+     */
     onMounted(() => {
       /**
        * 下面是全局事件监听
@@ -227,9 +230,6 @@ export default defineComponent({
       initTools();
     });
 
-    /**
-     * 钩子函数
-     */
     onBeforeUnmount(() => {
       bus.off('back', backAction);
       bus.on('changeNavigation', changeNavigation);
