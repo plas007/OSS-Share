@@ -1,7 +1,7 @@
 <!-- <script setup> 中的代码会在每次组件实例被创建的时候执行。 -->
 <script lang="ts">
 export default {
-  name: 'Latest',
+  name: 'File',
 };
 </script>
 <script setup lang="ts">
@@ -96,7 +96,7 @@ const onChangePath = (back: boolean = false) => {
  */
 const backAction = (action: any) => {
   console.log(action);
-  if (action && action.name && action.name === 'Latest' && action.type && action.type === 'pathChange') {
+  if (action && action.name && action.name === 'File' && action.type && action.type === 'pathChange') {
     let hasChangeTag = false;
     if (action.delta && action.delta < nowPath.value.length) {
       let count = action.delta;

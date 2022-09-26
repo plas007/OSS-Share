@@ -48,7 +48,7 @@ export default defineComponent({
      */
     const defaultPageName: string = getDefaultName();
     // 需要缓存的页面(tab页)
-    const keepAliveInclude = ref<Array<string>>(['Latest', 'Home', 'Upload']);
+    const keepAliveInclude = ref<Array<string>>(['Home', 'File', 'TextShare']);
     const showTabbar = ref<boolean>(true);
     /**
      * 全局导航栏数据存储

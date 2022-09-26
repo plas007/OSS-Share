@@ -1,23 +1,23 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
-import Latest from '../views/latest/Index.vue';
 import Home from '../views/home/Index.vue';
-import Upload from '../views/upload/Index.vue';
+import File from '../views/file/Index.vue';
+import TextShare from '../views/textShare/Index.vue';
 const routes = [
-  { path: '/', redirect: '/latest' },
+  { path: '/', redirect: '/HOME' },
   {
-    path: '/latest',
-    name: 'Latest',
-    component: Latest,
+    path: '/HOME',
+    name: 'Home',
+    component: Home,
     meta: {
       keepAlive: true, //设置页面是否需要使用缓存
       tabbar: true,
-      name: '最近',
+      name: '共享',
     },
   },
   {
-    path: '/home',
-    name: 'Home',
-    component: Home,
+    path: '/file',
+    name: 'File',
+    component: File,
     meta: {
       keepAlive: true, //设置页面是否需要使用缓存
       tabbar: true,
@@ -25,13 +25,13 @@ const routes = [
     },
   },
   {
-    path: '/upload',
-    name: 'Upload',
-    component: Upload,
+    path: '/textShare',
+    name: 'TextShare',
+    component: TextShare,
     meta: {
       keepAlive: true, //设置页面是否需要使用缓存
       tabbar: true,
-      name: '上传',
+      name: '文本',
     },
   },
 ];
