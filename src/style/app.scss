@@ -56,6 +56,11 @@ p {
   height: $navigation-height;
 }
 
+.positionElm {
+  width: 100%;
+  height: 0;
+}
+
 // /*a标签去除默认样式*/
 // a {
 //   text-decoration: none;

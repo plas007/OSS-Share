@@ -3,9 +3,9 @@ import Home from '../views/home/Index.vue';
 import File from '../views/file/Index.vue';
 import TextShare from '../views/textShare/Index.vue';
 const routes = [
-  { path: '/', redirect: '/HOME' },
+  { path: '/', redirect: '/home' },
   {
-    path: '/HOME',
+    path: '/home',
     name: 'Home',
     component: Home,
     meta: {

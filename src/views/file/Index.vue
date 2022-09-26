@@ -78,8 +78,9 @@ const onChangePath = (back: boolean = false) => {
   let len = nowPath.value.length;
   if (len > 1) {
     bus.emit('changeNavigation', {
-      showBack: len > 1,
+      showBack: true,
       title: nowPath.value[len - 1],
+      showRefresh: false,
     });
   } else {
     // 返回到第一级
@@ -87,6 +88,7 @@ const onChangePath = (back: boolean = false) => {
       bus.emit('changeNavigation', {
         showBack: false,
         title: '',
+        showRefresh: true,
       });
   }
 };

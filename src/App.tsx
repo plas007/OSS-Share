@@ -23,6 +23,7 @@ interface NavigationOptions {
   showNavigationBar?: boolean;
   showBack?: boolean;
   title?: string;
+  showRefresh?: boolean;
 }
 
 export default defineComponent({
@@ -61,6 +62,7 @@ export default defineComponent({
       showNavigationBar: true,
       showBack: false,
       title: defaultPageName,
+      showRefresh: true,
     });
     /**
      * tabbar栏显示内容
@@ -79,7 +81,7 @@ export default defineComponent({
     /**
      * tabbar子组件
      */
-    const tabbarRef = ref(null);
+    const tabbarRef = ref<null | HTMLElement>(null);
     const defaultIdx = ref<number>(0);
     /**
      * tabbar发生变化
@@ -106,6 +108,7 @@ export default defineComponent({
               showNavigationBar: true,
               showBack: false,
               title: tabbar.name,
+              showRefresh: true,
             });
           }
         });
@@ -114,16 +117,17 @@ export default defineComponent({
      * 更新导航栏标题统一方法
      */
     const setNavigation = (navigationOpts: NavigationOptions) => {
-      let { title, showNavigationBar, showBack } = navigationOpts;
+      let { title, showNavigationBar, showBack, showRefresh } = navigationOpts;
       const name = router.currentRoute.value.name
         ? router.currentRoute.value.meta && router.currentRoute.value.meta.name
           ? router.currentRoute.value.meta.name
           : router.currentRoute.value.name
         : defaultPageName;
-      if (title && typeof showBack === 'boolean' && typeof showNavigationBar === 'boolean') {
+      if (title && typeof showBack === 'boolean' && typeof showNavigationBar === 'boolean' && typeof showRefresh === 'boolean') {
         navigationOptions.title = title;
         navigationOptions.showBack = showBack;
         navigationOptions.showNavigationBar = showNavigationBar;
+        navigationOptions.showRefresh = showRefresh;
       } else {
         const navigation = navigationsMap[name as string] ?? { title: defaultPageName, showNavigationBar: true, showBack: false };
         if (title) {
@@ -141,8 +145,14 @@ export default defineComponent({
         } else {
           navigationOptions.showNavigationBar = navigation.showNavigationBar;
         }
+        if (typeof showRefresh === 'boolean') {
+          navigationOptions.showRefresh = showRefresh;
+        } else {
+          navigationOptions.showRefresh = navigation.showRefresh;
+        }
       }
       navigationsMap[name as string] = { ...navigationOptions };
+      console.log(navigationsMap);
     };
     /**
      * 导航栏返回
@@ -193,21 +203,25 @@ export default defineComponent({
         showBack: action.showBack,
         title: action.title,
         showNavigationBar: action.showNavigationBar,
+        showRefresh: action.showRefresh,
       });
     };
 
     const initTools = () => {
-      const path: string = location.hash.split('?')[0].substring(1);
-
+      const path: string = location.hash.split('?')[0].substring(1).trim();
+      console.log(path, tabbarList);
       for (let i = 0; i < tabbarList.length; i++) {
         let tab = tabbarList[i];
-        if (path === tab.path) {
+        console.log(path, tab.path.trim(), path === tab.path.trim());
+        if (path === tab.path.trim()) {
           setNavigation({
             showNavigationBar: true,
             showBack: false,
             title: tab.name,
+            showRefresh: true,
           });
           defaultIdx.value = i;
+          tabbarRef.value?.setTabItemIndex(i);
           return;
         }
       }
@@ -215,7 +229,41 @@ export default defineComponent({
         showNavigationBar: true,
         showBack: false,
         title: tabbarList[0].name,
+        showRefresh: true,
       });
+    };
+
+    const onStart = (e: any) => {
+      const { changedTouches } = e;
+      console.log('开始的位置', changedTouches[0].clientX, changedTouches[0].clientY);
+    };
+    const onEnd = (e: any) => {
+      const { changedTouches } = e;
+      console.log('离开的位位置', changedTouches[0].clientX, changedTouches[0].clientY);
+    };
+    const onMove = (e: any) => {
+      const { changedTouches } = e;
+      console.log('移动的位置', changedTouches[0].clientX, changedTouches[0].clientY);
+    };
+
+    /**
+     * 点击刷新
+     *
+     */
+    const onRefresh = () => {
+      console.log('执行了');
+      const currentRoute = router.currentRoute.value.name?.toString();
+      if (keepAliveInclude.value.includes(currentRoute || '')) {
+        bus.emit('refresh', {
+          type: 'pathChange',
+          name: currentRoute,
+        });
+      } else {
+        bus.emit('refresh', {
+          type: 'pageChange',
+          name: currentRoute,
+        });
+      }
     };
 
     /**
@@ -235,8 +283,18 @@ export default defineComponent({
       bus.on('changeNavigation', changeNavigation);
     });
     return () => (
-      <div class={['app-box', navigationOptions.showNavigationBar ? 'padding-top' : '', showTabbar.value ? 'padding-bottom' : '']}>
-        {navigationOptions.showNavigationBar && <NavigationBar showBack={navigationOptions.showBack} title={navigationOptions.title} class="navigationbar" onBack={onBack} />}
+      <div class={['app-box', navigationOptions.showNavigationBar ? 'padding-top' : '', showTabbar.value ? 'padding-bottom' : '']} onTouchstart={onStart} onTouchend={onEnd} onTouchmove={onMove}>
+        {navigationOptions.showNavigationBar && (
+          <NavigationBar
+            showRefresh={navigationOptions.showRefresh}
+            showBack={navigationOptions.showBack}
+            title={navigationOptions.title}
+            class="navigationbar"
+            onBack={onBack}
+            onRefresh={onRefresh}
+          />
+        )}
+        <div class="positionElm"></div>
         <RouterView>
           {({ Component }: { Component: any }) => {
             return (
@@ -248,7 +306,7 @@ export default defineComponent({
             );
           }}
         </RouterView>
-        {showTabbar.value && <Tabbar defaultIdx={defaultIdx} onChange={onTabchange} tabbarList={tabbarList} class="tabbar" />}
+        {showTabbar.value && <Tabbar ref={tabbarRef} defaultIdx={defaultIdx.value} onChange={onTabchange} tabbarList={tabbarList} class="tabbar" />}
       </div>
     );
   },

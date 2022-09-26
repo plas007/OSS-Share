@@ -8,7 +8,7 @@ export default {
 import { ref, reactive, toRef, onMounted, onBeforeUnmount } from 'vue';
 import ljRequest from '../../request';
 import bus from '@/libs/bus';
-import TextItemVue from '@/components/TextItem.vue';
+import TextItemVue from './TextItem.vue';
 interface Props {
   msg?: string;
   labels?: string[];
@@ -35,6 +35,10 @@ const data = reactive<Data>({
 const textList = toRef(data, 'textList');
 const nowPath = toRef(data, 'nowPath');
 
+/**
+ * 加载数据
+ * @param back
+ */
 const getTextList = (back: boolean = false) => {
   ljRequest
     .get({
@@ -113,19 +117,31 @@ const backAction = (action: any) => {
     if (hasChangeTag) getTextList(hasChangeTag);
   }
 };
+/**
+ * 页面刷新
+ */
+const onRefresh = (action: any) => {
+  console.log(action);
+  if (action && action.name && action.name === 'TextShare') {
+    textList.value = [];
+    getTextList();
+  }
+};
 onMounted(() => {
   bus.on('back', backAction);
+  bus.on('refresh', onRefresh);
   getTextList();
 });
 onBeforeUnmount(() => {
   bus.off('back', backAction);
+  bus.on('refresh', onRefresh);
 });
 </script>
 
 <template>
   <div class="folderBox">
     <div v-if="textList.length > 0" class="conetntBox">
-      <TextItemVue v-for="(item, index) in textList" :key="index" :file-item="item" @click="onTextItem(item, index)" />
+      <TextItemVue v-for="(item, index) in textList" :key="index" :text-item="item" @click="onTextItem(item, index)" />
     </div>
     <div v-else>
       <p>暂无内容</p>
@@ -135,7 +151,7 @@ onBeforeUnmount(() => {
 
 <style lang="scss" scoped>
 .folderBox {
-  margin: 2vw 5vw;
+  margin: 2vw 2vw;
   .conetntBox {
     display: flex;
     flex-direction: row;
