@@ -8,18 +8,18 @@ export default {
 import { ref, reactive, toRef, onMounted, onBeforeUnmount } from 'vue';
 import ljRequest from '../../request';
 import bus from '@/libs/bus';
-import FileItemVue from '@/components/FileItem.vue';
+import TextItemVue from '@/components/TextItem.vue';
 interface Props {
   msg?: string;
   labels?: string[];
 }
-interface FileItem {
+interface TextItem {
   isFile: boolean;
   name: string;
   relativePath: string;
 }
 interface Data {
-  fileList: Array<FileItem>;
+  textList: Array<TextItem>;
   nowPath: Array<string>;
 }
 
@@ -29,27 +29,24 @@ withDefaults(defineProps<Props>(), {
 });
 
 const data = reactive<Data>({
-  fileList: [],
+  textList: [],
   nowPath: ['upload'],
 });
-const fileList = toRef(data, 'fileList');
+const textList = toRef(data, 'textList');
 const nowPath = toRef(data, 'nowPath');
 
-const getFileList = (path: string = '', back: boolean = false) => {
+const getTextList = (back: boolean = false) => {
   ljRequest
     .get({
-      url: `/ossApi/getAllFiles.json`,
-      params: {
-        path,
-      },
+      url: `/ossApi/getShareText.json`,
     })
     .then((res: any) => {
       if (res.data.length > 0) {
         console.log(res.data);
-        fileList.value = res.data;
+        textList.value = res.data;
       } else {
         // 空文件夹则....
-        fileList.value = [];
+        textList.value = [];
       }
     })
     .finally(() => {
@@ -62,12 +59,12 @@ const getFileList = (path: string = '', back: boolean = false) => {
  * @param item
  * @param index
  */
-const onFileItem = (item: FileItem, index: number) => {
+const onTextItem = (item: TextItem, index: number) => {
   if (item.isFile) {
     //如果是文件类型应该弹出一个弹窗出来是否下载
   } else {
     nowPath.value.push(item.name);
-    getFileList(nowPath.value.join('\\'));
+    getTextList();
   }
 };
 
@@ -113,12 +110,12 @@ const backAction = (action: any) => {
         hasChangeTag = true;
       }
     }
-    if (hasChangeTag) getFileList(nowPath.value.join('\\'), hasChangeTag);
+    if (hasChangeTag) getTextList(hasChangeTag);
   }
 };
 onMounted(() => {
   bus.on('back', backAction);
-  getFileList(nowPath.value.join('\\'));
+  getTextList();
 });
 onBeforeUnmount(() => {
   bus.off('back', backAction);
@@ -127,8 +124,8 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="folderBox">
-    <div v-if="fileList.length > 0" class="conetntBox">
-      <FileItemVue v-for="(item, index) in fileList" :key="index" :file-item="item" @click="onFileItem(item, index)" />
+    <div v-if="textList.length > 0" class="conetntBox">
+      <TextItemVue v-for="(item, index) in textList" :key="index" :file-item="item" @click="onTextItem(item, index)" />
     </div>
     <div v-else>
       <p>暂无内容</p>
