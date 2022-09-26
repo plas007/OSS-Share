@@ -28,7 +28,7 @@ class LJRequest {
       (err) => {
         console.log('所有的实例都有的拦截器: 请求拦截失败');
         return err;
-      },
+      }
     );
 
     this.instance.interceptors.response.use(
@@ -43,7 +43,7 @@ class LJRequest {
           console.log('404错误~');
         }
         return err;
-      },
+      }
     );
   }
 

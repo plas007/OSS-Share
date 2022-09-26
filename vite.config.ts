@@ -23,6 +23,11 @@ export default defineConfig({
         changeOrigin: true,
         // rewrite: (path) => path.replace(/^\/visionary/, ''),
       },
+      '/upload': {
+        ws: false,
+        target: 'http://127.0.0.1:9999',
+        changeOrigin: true,
+      },
     },
   },
 });

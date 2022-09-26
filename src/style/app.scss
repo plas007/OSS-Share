@@ -36,8 +36,8 @@ p {
 }
 
 .padding-bottom {
-  padding-bottom: calc($tabbar-height + constant(safe-area-inset-bottom));
-  padding-bottom: calc($tabbar-height + env(safe-area-inset-bottom));
+  padding-bottom: calc($tabbar-height + 1rem + constant(safe-area-inset-bottom));
+  padding-bottom: calc($tabbar-height + 1rem + env(safe-area-inset-bottom));
 }
 
 .tabbar {
