@@ -7,6 +7,11 @@ import { router } from './router';
 import NavigationBar from '@/components/NavigationBar.vue';
 import bus from './libs/bus';
 
+interface HTMLElementTabbar extends HTMLElement {
+  changeTabItem: Function;
+  setTabItemIndex: Function;
+}
+
 interface Action {
   delta: number;
   type: string;
@@ -28,8 +33,6 @@ interface NavigationOptions {
 
 export default defineComponent({
   name: 'App',
-  components: { Tabbar },
-
   setup() {
     /**
      * 全局的页面路径对象
@@ -81,7 +84,7 @@ export default defineComponent({
     /**
      * tabbar子组件
      */
-    const tabbarRef = ref<null | HTMLElement>(null);
+    const tabbarRef = ref<null | HTMLElementTabbar>(null);
     const defaultIdx = ref<number>(0);
     /**
      * tabbar发生变化
@@ -280,7 +283,7 @@ export default defineComponent({
 
     onBeforeUnmount(() => {
       bus.off('back', backAction);
-      bus.on('changeNavigation', changeNavigation);
+      bus.off('changeNavigation', changeNavigation);
     });
     return () => (
       <div class={['app-box', navigationOptions.showNavigationBar ? 'padding-top' : '', showTabbar.value ? 'padding-bottom' : '']} onTouchstart={onStart} onTouchend={onEnd} onTouchmove={onMove}>

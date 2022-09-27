@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
+    "target": "esnext",
     "useDefineForClassFields": true,
-    "module": "ESNext",
-    "moduleResolution": "Node",
+    "module": "esnext",
+    "moduleResolution": "node",
     "strict": true,
     "jsx": "preserve",
     "sourceMap": true,
@@ -11,12 +11,11 @@
     "isolatedModules": true,
     "esModuleInterop": true,
     "lib": [
-      "ESNext",
-      "DOM"
+      "esnext",
+      "dom"
     ],
-    "skipLibCheck": true,
-    "baseUrl": "./", // 解析非相对模块的基础地址，默认是当前目录
-    "paths": { // 路径映射，相对于baseUrl
+    "baseUrl": "./",
+    "paths": {
       "@/*": [
         "src/*"
       ]
@@ -24,6 +23,7 @@
   },
   "include": [
     "src/**/*.ts",
+    "src/*.tsx",
     "src/**/*.d.ts",
     "src/**/*.tsx",
     "src/**/*.vue"

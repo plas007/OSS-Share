@@ -8,7 +8,8 @@ export default {
 import { ref, reactive, toRef, onMounted, onBeforeUnmount } from 'vue';
 import ljRequest from '../../request';
 import bus from '@/libs/bus';
-import TextItemVue from './TextItem.vue';
+// import TextItemVue from './TextItem.vue';
+import TextItemVue from './TextItem';
 interface Props {
   msg?: string;
   labels?: string[];

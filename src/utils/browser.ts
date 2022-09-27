@@ -82,3 +82,5 @@ export function downLoadFile(url: string, fileName: string = '' + new Date().get
   a.setAttribute('href', url); // 设置下载地址
   a.dispatchEvent(e); // 触发点击事件
 }
+
+export default isPCView;

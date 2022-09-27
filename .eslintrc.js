@@ -9,7 +9,7 @@ module.exports = {
     'vue/require-default-prop': 'off', // 关闭默认值
     '@typescript-eslint/no-explicit-any': 'off', // 关闭禁用any
     'vue/multi-word-component-names': 'off',
-    "no-unused-vars": 0
+    'no-unused-vars': 0,
   },
   parser: 'vue-eslint-parser',
   parserOptions: {
