@@ -1,7 +1,7 @@
 <!-- <script setup> 中的代码会在每次组件实例被创建的时候执行。 -->
 <script setup lang="ts">
 import { ref, reactive, toRef, computed } from 'vue';
-const emits = defineEmits(['click']);
+const emits = defineEmits(['click', 'clickOpts']);
 interface FileItem {
   isFile: boolean;
   name: string;
@@ -12,6 +12,9 @@ interface Props {
   nameRows?: number;
   showName?: boolean;
   imgHeight?: string;
+  iconSize?: string;
+  showOpts?: boolean;
+  opts?: Array<Record<string, any>>;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -25,6 +28,14 @@ const props = withDefaults(defineProps<Props>(), {
   nameRows: 2,
   showName: true,
   imgHeight: '',
+  iconSize: '',
+  showOpts: false,
+  opts: () => [
+    { label: '下载', value: 'download' },
+    { label: '复制', value: 'copy' },
+    { label: '删除', value: 'del' },
+    { label: '移动', value: 'move' },
+  ],
 });
 
 // 变量
@@ -71,111 +82,33 @@ const rejectName = (name: string) => {
   }
   return res;
 };
-
+/**
+ * 点击整个组件(除操作符外)
+ * @param e
+ */
 const onClick = (e: any) => {
   emits('click', e);
+};
+/**
+ * 点击操作符
+ * @param e
+ */
+const onOpts = (e: any) => {
+  emits('clickOpts', e);
 };
 </script>
 
 <template>
   <div class="folderItem" @click="onClick">
-    <svg v-if="fileType === 'folder'" t="1663852047589" class="folderIcon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="11703">
-      <path
-        d="M885.333333 168.533333h-448L341.333333 110.933333c-6.4-4.266667-14.933333-6.4-21.333333-6.4H134.4c-51.2 0-93.866667 42.666667-93.866667 93.866667v622.933333c0 51.2 42.666667 93.866667 93.866667 93.866667h750.933333c51.2 0 93.866667-42.666667 93.866667-93.866667V262.4c0-51.2-40.533333-93.866667-93.866667-93.866667z m-738.133333 21.333334h160l96 57.6c6.4 4.266667 14.933333 6.4 21.333333 6.4h445.866667c12.8 0 21.333333 8.533333 21.333333 21.333333V298.666667c0 12.8-8.533333 21.333333-21.333333 21.333333h-725.333333c-12.8 0-21.333333-8.533333-21.333334-21.333333V211.2c2.133333-10.666667 12.8-21.333333 23.466667-21.333333z"
-        fill="#A1A9F1"
-        p-id="11704"
-        data-spm-anchor-id="a313x.7781069.0.i0"
-        class="selected"
-      ></path>
-    </svg>
+    <svg-icon v-if="fileType === 'folder'" class="uniIcon" :style="iconSize ? 'font-size: ' + iconSize : ''" name="folder" />
     <img
       v-else-if="['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp'].includes(fileType)"
       :src="fileItem.relativePath"
       class="folderIcon"
       :style="'max-height:' + (imgHeight ? imgHeight : '6.8rem') + ';'"
     />
-    <svg
-      v-else-if="fileType === '.txt'"
-      t="1664098319935"
-      class="folderIcon"
-      viewBox="0 0 1024 1024"
-      version="1.1"
-      xmlns="http://www.w3.org/2000/svg"
-      p-id="9714"
-      data-spm-anchor-id="a313x.7781069.0.i42"
-      width="200"
-      height="200"
-    >
-      <path d="M923.136 969.557333H193.024v-909.653333h521.386667l208.725333 207.701333z" fill="#f3f3f3" p-id="9715" data-spm-anchor-id="a313x.7781069.0.i40" class="selected"></path>
-
-      <path
-        d="M912.896 253.952l2.56 671.914667c0 15.530667-12.458667 27.989333-27.989333 27.989333H237.909333c-15.530667 0-27.989333-12.458667-27.989333-27.989333V96.938667c0-15.530667 12.458667-27.989333 27.989333-27.989334l493.397334-1.024-38.912-39.936H239.274667c-36.352 0-65.706667 29.354667-65.706667 65.706667v835.584c0 36.352 29.354667 65.706667 65.706667 65.706667h646.826666c36.352 0 65.706667-29.354667 65.706667-65.706667V293.888l-38.912-39.936z"
-        fill="#f3f3f3"
-        p-id="9716"
-        data-spm-anchor-id="a313x.7781069.0.i35"
-        class=""
-      ></path>
-      <path
-        d="M692.394667 222.72c0 39.424 31.914667 71.338667 71.338666 71.338667h188.245334L692.394667 27.989333v194.730667z"
-        fill="#dbdbdb"
-        p-id="9717"
-        data-spm-anchor-id="a313x.7781069.0.i38"
-        class=""
-      ></path>
-      <path
-        d="M557.568 482.304H158.72c-50.346667 0-91.136-40.789333-91.136-91.136v-60.245333c0-50.346667 40.789333-91.136 91.136-91.136h398.848c50.346667 0 91.136 40.789333 91.136 91.136v60.245333c0 50.346667-40.789333 91.136-91.136 91.136z"
-        fill="#A1A9F1"
-        p-id="9718"
-        data-spm-anchor-id="a313x.7781069.0.i34"
-        class=""
-      ></path>
-      <path
-        d="M117.930667 287.573333h146.261333V325.973333H215.04v117.248H166.912V325.973333H117.930667v-38.4zM275.285333 287.573333h53.077334l27.648 47.957334 26.794666-47.957334H435.2l-48.469333 75.434667 53.077333 80.384H385.706667l-30.72-50.005333-30.72 50.005333h-53.76l53.76-81.237333-48.981334-74.581334zM444.245333 287.573333H590.506667V325.973333h-49.152v117.248H493.226667V325.973333h-49.152l0.170666-38.4z"
-        fill="#f3f3f3"
-        p-id="9719"
-        data-spm-anchor-id="a313x.7781069.0.i41"
-        class="selected"
-      ></path>
-      <path
-        d="M782.677333 679.594667H342.698667c-15.701333 0-28.330667-12.8-28.330667-28.330667v-5.290667c0-15.701333 12.8-28.330667 28.330667-28.330666h439.978666c15.701333 0 28.330667 12.8 28.330667 28.330666v5.290667c0 15.530667-12.629333 28.330667-28.330667 28.330667z"
-        fill="#A1A9F1"
-        p-id="9720"
-        data-spm-anchor-id="a313x.7781069.0.i36"
-        class=""
-      ></path>
-      <path
-        d="M602.282667 810.154667H342.698667c-15.701333 0-28.330667-12.8-28.330667-28.330667V776.533333c0-15.701333 12.8-28.330667 28.330667-28.330666h259.584c15.701333 0 28.330667 12.8 28.330666 28.330666v5.290667c0 15.530667-12.629333 28.330667-28.330666 28.330667z"
-        fill="#A1A9F1"
-        p-id="9721"
-        data-spm-anchor-id="a313x.7781069.0.i37"
-        class=""
-      ></path>
-    </svg>
-    <svg v-else-if="fileType === '.pdf'" t="1664099357052" class="folderIcon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5532" width="200" height="200">
-      <path
-        d="M704 0H192c-35.328 0-64 28.672-64 64v320h576c35.328 0 64 28.672 64 64v415.744c0 35.328-28.672 64-64 64H128v31.744c0 35.328 28.672 64 64 64h768c35.328 0 64-28.672 64-64v-640L704 0z"
-        fill="#f3f3f3"
-        p-id="5533"
-        data-spm-anchor-id="a313x.7781069.0.i1"
-        class=""
-      ></path>
-      <path d="M704 0v256c0 35.328 28.672 64 64 64h256L704 0z" fill="#e6e5e5" p-id="5534" data-spm-anchor-id="a313x.7781069.0.i2" class=""></path>
-      <path d="M768 320l256 256V320z" opacity=".1" p-id="5535" data-spm-anchor-id="a313x.7781069.0.i4" class="" fill="#dbdbdb"></path>
-      <path
-        d="M704 832c0 17.92-14.336 31.744-31.744 31.744H31.744C13.824 863.744 0 849.408 0 832V480.256c0-17.92 14.336-31.744 31.744-31.744h640c17.92 0 31.744 14.336 31.744 31.744V832z"
-        fill="#A1A9F1"
-        p-id="5536"
-        data-spm-anchor-id="a313x.7781069.0.i0"
-        class=""
-      ></path>
-      <path
-        d="M192 544.256h-48.128c-8.704 0-15.872 7.168-15.872 15.872v192c0 8.704 7.168 15.872 15.872 15.872s15.872-7.168 15.872-15.872v-79.872h31.744c35.328 0 64-28.672 64-64s-28.16-64-63.488-64z m158.72 0c34.816 0 62.976 27.648 64 62.464v97.792c0 34.816-27.648 62.976-62.464 64h-49.664c-8.704 0-15.36-6.656-15.872-14.848V560.64c0-8.704 6.656-15.36 14.848-15.872h49.152z m227.328 0c8.704 0 15.872 7.168 15.872 15.872S586.752 576 578.048 576h-80.384v64h48.128c8.704 0 15.872 7.168 15.872 15.872s-7.168 15.872-15.872 15.872h-48.128v79.872c0 8.704-7.168 15.872-15.872 15.872s-15.872-7.168-15.872-15.872v-192c0-8.704 7.168-15.872 15.872-15.872h96.256zM350.72 576h-31.744v159.744h31.744c17.408 0 31.232-13.824 31.744-30.72v-97.28C382.976 590.336 368.64 576 350.72 576zM192 576c17.92 0 31.744 14.336 31.744 31.744S209.92 640 192 640h-31.744v-64H192z"
-        fill="#f3f3f3"
-        p-id="5537"
-        data-spm-anchor-id="a313x.7781069.0.i5"
-        class=""
-      ></path>
-    </svg>
+    <svg-icon v-else-if="fileType === '.txt'" class="uniIcon" :style="iconSize ? 'font-size: ' + iconSize : ''" name="txt" />
+    <svg-icon v-else-if="fileType === '.pdf'" class="uniIcon" :style="iconSize ? 'font-size: ' + iconSize : ''" name="pdf" />
     <div v-else-if="['.mp4', '.mov'].includes(fileType)">
       <svg t="1664157700548" class="folderIcon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="9705" width="200" height="200">
         <path
@@ -201,24 +134,7 @@ const onClick = (e: any) => {
       </svg>
     </div>
     <div v-else class="otherObx">
-      <svg v-if="fileType.indexOf('.') === -1" t="1664098969334" class="folderIcon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="11097" width="200" height="200">
-        <path
-          d="M192 0h448.1536L960 320v576c0 70.6944-57.3056 128-128 128H192C121.3056 1024 64 966.6944 64 896V128C64 57.3056 121.3056 0 192 0z"
-          fill="#f3f3f3"
-          p-id="11098"
-          data-spm-anchor-id="a313x.7781069.0.i48"
-          class="selected"
-        ></path>
-        <path
-          d="M540.5056 656v-8.064c0-13.824 2.7904-25.9072 8.384-37.4272a88.832 88.832 0 0 1 22.3616-28.7872c26.8288-24.1792 43.0336-39.7184 48.064-45.4784C632.7296 517.8112 640 494.208 640 465.408c0-35.1232-11.1744-62.7584-33.536-82.9056-22.3616-20.736-51.9808-30.5152-88.32-30.5152-41.3568 0-73.7792 12.096-97.8176 36.2752C395.7376 412.4544 384 445.8496 384 488.448h63.7184c0-24.192 4.48-43.1872 13.9776-56.4352 10.624-16.128 27.9424-23.6032 52.544-23.6032 18.9952 0 34.0864 5.184 44.7104 16.128 10.0608 10.9312 15.6544 25.9072 15.6544 44.9024 0 14.4-5.0304 28.2112-15.104 40.8832l-6.6944 8.064c-36.3392 33.3824-58.1376 57.5744-65.408 73.1136-7.808 15.552-11.1744 34.5472-11.1744 56.4224v8.064h64.2816zM503.744 768c11.3536 0 20.6464-3.712 28.3904-11.136 7.7312-7.4112 11.8656-17.472 11.8656-29.1328 0-11.648-4.1344-21.184-11.3536-28.608-7.744-7.424-17.5488-11.1232-28.9024-11.1232s-20.6464 3.712-28.3904 11.136c-7.744 7.4112-11.3536 16.9472-11.3536 28.5952 0 11.648 3.6096 21.1968 11.3536 28.608 7.744 7.424 17.024 11.6608 28.3904 11.6608z"
-          fill="#A1A9F1"
-          opacity=".9"
-          p-id="11099"
-          data-spm-anchor-id="a313x.7781069.0.i47"
-          class=""
-        ></path>
-        <path d="M640 0l320 320H768c-70.6944 0-128-57.3056-128-128V0z" fill="#e6e5e5" p-id="11100" data-spm-anchor-id="a313x.7781069.0.i46" class=""></path>
-      </svg>
+      <svg-icon v-if="fileType.indexOf('.') === -1" class="uniIcon" :style="iconSize ? 'font-size: ' + iconSize : ''" name="unknown" />
       <svg v-else class="folderIcon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
         <path
           d="M192 0h448.1536L960 320v576c0 70.6944-57.3056 128-128 128H192C121.3056 1024 64 966.6944 64 896V128C64 57.3056 121.3056 0 192 0z"
@@ -249,6 +165,13 @@ const onClick = (e: any) => {
     <div v-if="showName" class="fileName">
       <p :style="'-webkit-line-clamp:' + nameRows + ';'">{{ rejectName(fileItem.name) }}</p>
     </div>
+    <div v-if="showOpts">
+      <svg t="1664254406410" class="optIcon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2243" width="200" height="200" @click.stop="onOpts">
+        <path d="M819.2 511.6m-76.8 0a76.8 76.8 0 1 0 153.6 0 76.8 76.8 0 1 0-153.6 0Z" fill="#515151" p-id="2244"></path>
+        <path d="M512 511.6m-76.8 0a76.8 76.8 0 1 0 153.6 0 76.8 76.8 0 1 0-153.6 0Z" fill="#515151" p-id="2245"></path>
+        <path d="M204.8 511.6m-76.8 0a76.8 76.8 0 1 0 153.6 0 76.8 76.8 0 1 0-153.6 0Z" fill="#515151" p-id="2246"></path>
+      </svg>
+    </div>
   </div>
 </template>
 
@@ -262,9 +185,19 @@ const onClick = (e: any) => {
   &:active {
     opacity: 0.5;
   }
+  .uniIcon {
+    font-size: 5rem;
+  }
   .folderIcon {
     width: 68%;
     height: auto;
+  }
+  .optIcon {
+    width: 1rem;
+    height: auto;
+    background: #e6e6e6;
+    padding: 0.1rem 0.2rem;
+    border-radius: 4px;
   }
   .fileName {
     display: flex;

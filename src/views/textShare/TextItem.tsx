@@ -132,9 +132,6 @@ export default defineComponent({
     onMounted(() => {
       loadData();
     });
-    onActivated(() => {
-      loadData();
-    });
     return () => (
       <div class="textItem">
         <div class="title">

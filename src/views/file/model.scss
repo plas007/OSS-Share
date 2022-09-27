@@ -1,0 +1,78 @@
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+.fileOptionModal {
+  background-color: rgba(0, 0, 0, 0.2);
+  .cardBox {
+    position: absolute;
+    bottom: calc(1rem + constant(safe-area-inset-bottom));
+    bottom: calc(1rem + env(safe-area-inset-bottom));
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: 94vw;
+    height: 20rem;
+    background-color: white;
+    border-radius: 12px;
+    overflow: auto;
+    .fileInfoBox {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      padding: 1rem 0.4rem 0 0.4rem;
+      // border-bottom: 0.5px solid gray;
+      height: 4rem;
+      .iconBox {
+        width: 3.5rem;
+        margin-bottom: 0;
+      }
+      .info {
+        height: 2.6rem;
+        display: flex;
+        flex-direction: column;
+        p {
+          margin: auto;
+        }
+      }
+    }
+    .closeIcon {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.8rem;
+      .icon {
+        font-size: 1.5rem;
+        &:active {
+          opacity: 0.3;
+        }
+      }
+    }
+    .optionItem {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      background-color: #f3f3f3;
+      border-radius: 14px;
+      padding: 0.5rem 0.8rem;
+      margin: 0.5rem;
+      .optionNameBox {
+        .optionName {
+          font-size: 0.9rem;
+        }
+      }
+      .optionIconBox {
+        .optionIcon {
+          font-size: 1.3rem;
+        }
+      }
+      &:active {
+        opacity: 0.3;
+      }
+    }
+  }
+}

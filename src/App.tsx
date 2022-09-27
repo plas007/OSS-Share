@@ -2,6 +2,7 @@
 import { defineComponent, KeepAlive, onBeforeUnmount, onMounted, onBeforeMount, reactive, ref, Transition } from 'vue';
 import { RouterLink, RouterView } from 'vue-router';
 import './style/app.scss';
+import './style/animation.scss';
 import Tabbar from '@/components/Tabbar.vue';
 import { router } from './router';
 import NavigationBar from '@/components/NavigationBar.vue';

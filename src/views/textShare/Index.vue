@@ -5,10 +5,9 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { ref, reactive, toRef, onMounted, onBeforeUnmount } from 'vue';
+import { ref, reactive, toRef, onMounted, onBeforeUnmount, onActivated } from 'vue';
 import ljRequest from '../../request';
 import bus from '@/libs/bus';
-// import TextItemVue from './TextItem.vue';
 import TextItemVue from './TextItem';
 interface Props {
   msg?: string;
@@ -128,6 +127,10 @@ const onRefresh = (action: any) => {
     getTextList();
   }
 };
+onActivated(() => {
+  console.log('激活了');
+  getTextList();
+});
 onMounted(() => {
   bus.on('back', backAction);
   bus.on('refresh', onRefresh);

@@ -7,11 +7,10 @@ export default {
 <script setup lang="ts">
 import ljRequest from '@/request';
 import { ref, reactive, toRef, onMounted, watch, inject } from 'vue';
-const Toast: Function = inject('Toast') as Function;
+import FileItem from '@/components/FileItem.vue';
 import { copyToClip } from '@/utils/copyToClip';
 import { isiOS } from '@/utils/browser';
-import { formatDate } from '@/utils/formatTime.ts';
-import FileItem from '@/components/FileItem.vue';
+import { formatDate } from '@/utils/formatTime';
 interface TextHistory {
   userName?: string;
   platform?: string;
@@ -31,7 +30,7 @@ interface FileSelectItem {
   type?: string;
   webUrl?: string;
 }
-
+const Toast: Function = inject('Toast') as Function;
 withDefaults(defineProps<Props>(), {
   msg: 'hello',
   labels: () => ['one', 'two'],
@@ -142,11 +141,10 @@ const onShareText = () => {
 
 const pushTextHistory = (textHistory: TextHistory) => {
   return new Promise((resolve, reject) => {
-    let time = new Date(Number(textHistory.uploadTime));
     try {
       uploadTextHistory.unshift({
         ...textHistory,
-        uploadTime: formatDate(time),
+        uploadTime: formatDate(Number(textHistory.uploadTime)),
         platform: isiOS() ? 'iOS' : 'android',
         userName: localStorage.getItem('userName') as string,
       });
@@ -262,7 +260,7 @@ const uploadFile = (idx?: number) => {
  * 复制web地址
  */
 const onCopyLinkBtn = (item: FileSelectItem) => {
-  let copyText = item.webUrl;
+  let copyText = item.webUrl as string;
   if (navigator.clipboard) {
     navigator.clipboard.writeText(copyText as string).then(() => {
       Toast!('复制成功');
@@ -326,14 +324,14 @@ onMounted(() => {
         </div>
       </div>
     </div>
-    <div class="title fileTitle">共享文件/图片视频/拍照</div>
+    <div class="title fileTitle">共享文件/图片视频</div>
     <div class="fileBox">
       <div class="selectBox">
         <div class="itemSelect" :class="fileList.length === 0 ? 'noneSelect' : ''">
           <div v-for="(item, index) in fileList" :key="index" class="addItem item">
             <img v-if="item.type?.startsWith('image/')" class="img" :src="item.url" />
             <div v-else class="fileSvgBox">
-              <FileItem class="fileSvg" :file-item="getFileItem(item)" name-rows="1" />
+              <FileItem class="fileSvg" :file-item="getFileItem(item)" :name-rows="1" />
             </div>
           </div>
           <div class="addItem item">
@@ -459,7 +457,7 @@ onMounted(() => {
             <p class="uploadTime">{{ item.uploadTime }}</p>
           </div>
           <div class="fileHistoryContent">
-            <FileItem class="fileItem" :file-item="getFileItem(item)" :show-name="false"></FileItem>
+            <FileItem class="fileItem" :file-item="getFileItem(item)" icon-size="11vw" :show-name="false"></FileItem>
             <div class="infoBox">
               <p class="infoItem">{{ item.file.name }}</p>
               <div class="optsBox">
@@ -590,10 +588,6 @@ $cardRadius: 8px;
             background-color: green;
             color: white;
           }
-        }
-        .userName {
-        }
-        .uploadTime {
         }
       }
       .historyBox {
@@ -726,8 +720,6 @@ $cardRadius: 8px;
           }
         }
       }
-      .reviewFile {
-      }
       .fileConfirmBtn {
         margin-top: 1.5rem;
         flex: 1;
@@ -758,6 +750,7 @@ $cardRadius: 8px;
       border-radius: $cardRadius;
       margin-top: 2rem;
       .fileHistoryItem {
+        margin-bottom: 0.6rem;
         background-color: white;
         padding: 0.5rem 0;
         border-radius: 7px;
@@ -778,10 +771,6 @@ $cardRadius: 8px;
               background-color: green;
               color: white;
             }
-          }
-          .userName {
-          }
-          .uploadTime {
           }
         }
         .fileHistoryContent {

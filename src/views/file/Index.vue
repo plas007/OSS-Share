@@ -9,6 +9,7 @@ import { ref, reactive, toRef, onMounted, onBeforeUnmount } from 'vue';
 import ljRequest from '../../request';
 import bus from '@/libs/bus';
 import FileItemVue from '@/components/FileItem.vue';
+import FileOptionModal from './FileOptionModal';
 interface Props {
   msg?: string;
   labels?: string[];
@@ -34,6 +35,8 @@ const data = reactive<Data>({
 });
 const fileList = toRef(data, 'fileList');
 const nowPath = toRef(data, 'nowPath');
+const showItemOpts = ref<FileItem>({ isFile: false, name: '', relativePath: '' });
+const showOptsModal = ref<boolean>(false);
 
 const getFileList = (path: string = '', back: boolean = false) => {
   ljRequest
@@ -118,6 +121,20 @@ const backAction = (action: any) => {
     if (hasChangeTag) getFileList(nowPath.value.join('\\'), hasChangeTag);
   }
 };
+/**
+ * 点击操作
+ */
+const onOptions = (item: FileItem, index: number) => {
+  showItemOpts.value = item;
+  showOptsModal.value = true;
+};
+/**
+ * 关闭操作弹窗
+ */
+const onCloseOptions = () => {
+  showItemOpts.value = { isFile: false, name: '', relativePath: '' };
+  showOptsModal.value = false;
+};
 onMounted(() => {
   bus.on('back', backAction);
   getFileList(nowPath.value.join('\\'));
@@ -130,11 +147,12 @@ onBeforeUnmount(() => {
 <template>
   <div class="folderBox">
     <div v-if="fileList.length > 0" class="conetntBox">
-      <FileItemVue v-for="(item, index) in fileList" :key="index" :file-item="item" @click="onFileItem(item, index)" />
+      <FileItemVue v-for="(item, index) in fileList" :key="index" :file-item="item" :show-opts="true" @click="onFileItem(item, index)" @click-opts="onOptions(item, index)" />
     </div>
     <div v-else>
       <p>暂无内容</p>
     </div>
+    <FileOptionModal v-if="showOptsModal" :file="showItemOpts" @close="onCloseOptions" />
   </div>
 </template>
 
