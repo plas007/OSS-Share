@@ -136,12 +136,24 @@ const onCloseOptions = () => {
   showItemOpts.value = { isFile: false, name: '', relativePath: '' };
   showOptsModal.value = false;
 };
+/**
+ * 页面刷新
+ */
+const onRefresh = (action: any) => {
+  console.log(action);
+  if (action && action.name && action.name === 'File') {
+    fileList.value = [];
+    getFileList(nowPath.value.join('\\'));
+  }
+};
 onMounted(() => {
   bus.on('back', backAction);
+  bus.on('refresh', onRefresh);
   getFileList(nowPath.value.join('\\'));
 });
 onBeforeUnmount(() => {
   bus.off('back', backAction);
+  bus.off('refresh', onRefresh);
 });
 </script>
 
