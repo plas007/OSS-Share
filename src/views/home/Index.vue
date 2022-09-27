@@ -10,7 +10,7 @@ import { ref, reactive, toRef, onMounted, watch, inject } from 'vue';
 const Toast: Function = inject('Toast') as Function;
 import { copyToClip } from '@/utils/copyToClip';
 import { isiOS } from '@/utils/browser';
-import { formatDate } from '@/utils/formatTime';
+import { formatDate } from '@/utils/formatTime.ts';
 import FileItem from '@/components/FileItem.vue';
 interface TextHistory {
   userName?: string;
@@ -132,7 +132,7 @@ const onShareText = () => {
         },
         (err) => {
           Toast('系统错误');
-        }
+        },
       )
       .finally(() => {
         uploadTextLoading.value = false;
