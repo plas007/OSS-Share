@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --host --mode development",
     "build": "vue-tsc --noEmit --skipLibCheck && vite build",
-    "build-no-tsc": "vite build",
+    "build-public": "vite build && node ./publish.js",
     "preview": "vite preview",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src",
     "format": "prettier . --write"

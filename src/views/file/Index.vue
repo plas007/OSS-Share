@@ -68,6 +68,7 @@ const getFileList = (path: string = '', back: boolean = false) => {
 const onFileItem = (item: FileItem, index: number) => {
   if (item.isFile) {
     //如果是文件类型应该弹出一个弹窗出来是否下载
+    window.open(location.origin + item.relativePath.replaceAll('\\', '/'));
   } else {
     nowPath.value.push(item.name);
     getFileList(nowPath.value.join('\\'));
