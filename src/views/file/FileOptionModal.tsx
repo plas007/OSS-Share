@@ -52,9 +52,9 @@ export default defineComponent({
       optionList: [
         { label: '下载', value: 'download' },
         { label: '复制', value: 'link' },
-        { label: '删除', value: 'del' },
-        { label: '移动', value: 'move' },
-      ],
+        // { label: '删除', value: 'del' },
+        // { label: '移动', value: 'move' },
+      ], 
     });
     const optionList = toRef(data, 'optionList');
     let backOverflow = 'auto';
@@ -134,6 +134,9 @@ export default defineComponent({
                 onClose();
               }}
             />
+          </div>
+          <div class={["optBigBox"]}>
+
           </div>
           {optionList.value.map((item: Option, index: number) => {
             if (!props.file.isFile && item.value === 'download') {

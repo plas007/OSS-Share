@@ -6,6 +6,19 @@
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>OSS资源共享</title>
+  <script>
+    function isApp(userAgent) {
+      return userAgent.match(
+          /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i
+        ) == null ?
+        false :
+        true;
+    }
+    // 在PC端打开、且不是在iframe中打开时重定向
+    if (!isApp(navigator.userAgent) && (self === top)) {
+      location.replace(location.origin + "/oss.html?webviewUrl=" + encodeURIComponent(location.href))
+    }
+  </script>
 </head>
 
 <body>
