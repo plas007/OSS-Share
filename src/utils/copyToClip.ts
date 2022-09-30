@@ -5,7 +5,7 @@ import { Toast } from '@/libs/Toast';
  * content : 需要复制的内容
  * message : 复制完后的提示，不传则默认提示"复制成功"
  */
-export const copyToClip = (content: string) => {
+export const copyToClip = (content: string, showToast: boolean = true) => {
   let textarea = document.getElementById('copyArea');
   if (!textarea) {
     textarea = createCopyBox('copyArea');
@@ -15,7 +15,7 @@ export const copyToClip = (content: string) => {
   // @ts-ignore
   textarea.select();
   document.execCommand('copy');
-  Toast!('复制成功');
+  showToast && Toast!('复制成功');
 };
 
 /**

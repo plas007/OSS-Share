@@ -15,7 +15,7 @@
         true;
     }
     // 在PC端打开、且不是在iframe中打开时重定向
-    if (!isApp(navigator.userAgent) && (self === top)) {
+    if (!isApp(navigator.userAgent) && (self === top) && (location.port !== '5173')) {
       location.replace(location.origin + "/oss.html?webviewUrl=" + encodeURIComponent(location.href))
     }
   </script>

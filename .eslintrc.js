@@ -10,6 +10,7 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'off', // 关闭禁用any
     'vue/multi-word-component-names': 'off',
     'no-unused-vars': 0,
+    'vue/comment-directive': 'off', // 只能在模板里写注释，不能在标签里写注释的检查 关闭
   },
   parser: 'vue-eslint-parser',
   parserOptions: {

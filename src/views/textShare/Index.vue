@@ -6,9 +6,10 @@ export default {
 </script>
 <script setup lang="ts">
 import { ref, reactive, toRef, onMounted, onBeforeUnmount, onActivated } from 'vue';
+import TextModal from '@/components/modal/TextModal.vue';
+import TextItemVue from '@/components/textItem/TextItem';
 import ljRequest from '../../request';
 import bus from '@/libs/bus';
-import TextItemVue from './TextItem';
 interface Props {
   msg?: string;
   labels?: string[];
@@ -34,6 +35,10 @@ const data = reactive<Data>({
 });
 const textList = toRef(data, 'textList');
 const nowPath = toRef(data, 'nowPath');
+// 是否显示全部文本查看弹窗
+const showTextModal = ref<boolean>(false);
+// 需要展示的文本详情
+const textDetail = ref<string>('');
 
 /**
  * 加载数据
@@ -64,12 +69,12 @@ const getTextList = (back: boolean = false) => {
  * @param index
  */
 const onTextItem = (item: TextItem, index: number) => {
-  if (item.isFile) {
-    //如果是文件类型应该弹出一个弹窗出来是否下载
-  } else {
-    nowPath.value.push(item.name);
-    getTextList();
-  }
+  // if (item.isFile) {
+  //   //如果是文件类型应该弹出一个弹窗出来是否下载
+  // } else {
+  //   nowPath.value.push(item.name);
+  //   getTextList();
+  // }
 };
 
 /**
@@ -127,6 +132,22 @@ const onRefresh = (action: any) => {
     getTextList();
   }
 };
+/**
+ * 点击查看文本详情
+ * @param val
+ */
+const onShowText = (val: any) => {
+  showTextModal.value = true;
+  textDetail.value = val.value;
+  console.log(val);
+};
+/**
+ * 关闭文本弹窗
+ */
+const onHideTextModal = () => {
+  showTextModal.value = false;
+  textDetail.value = '';
+};
 onActivated(() => {
   console.log('激活了');
   getTextList();
@@ -143,13 +164,16 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="folderBox">
-    <div v-if="textList.length > 0" class="conetntBox">
-      <TextItemVue v-for="(item, index) in textList" :key="index" :text-item="item" @click="onTextItem(item, index)" />
+  <div>
+    <div class="folderBox">
+      <div v-if="textList.length > 0" class="conetntBox">
+        <TextItemVue v-for="(item, index) in textList" :key="index" :text-item="item" @on-show-text="onShowText" @click="onTextItem(item, index)" />
+      </div>
+      <div v-else>
+        <p>暂无内容</p>
+      </div>
     </div>
-    <div v-else>
-      <p>暂无内容</p>
-    </div>
+    <TextModal v-if="showTextModal" :text="textDetail" @close="onHideTextModal" />
   </div>
 </template>
 

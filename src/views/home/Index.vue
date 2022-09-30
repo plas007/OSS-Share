@@ -9,14 +9,16 @@ import ljRequest from '@/request';
 import bus from '@/libs/bus';
 import { ref, reactive, toRef, onMounted, onBeforeUnmount, watch, inject } from 'vue';
 import FileItem from '@/components/FileItem.vue';
+import TextItemVue from '@/components/textItem/TextItem';
+import TextModal from '@/components/modal/TextModal.vue';
 import { copyToClip } from '@/utils/copyToClip';
 import { isiOS } from '@/utils/browser';
 import { formatDate } from '@/utils/formatTime';
 interface TextHistory {
   userName?: string;
   platform?: string;
-  text: string;
-  uploadTime: string;
+  value: string;
+  createTime: number;
 }
 interface Props {
   msg?: string;
@@ -61,6 +63,10 @@ const fileInput = ref(null);
 const fileList = reactive<Array<FileSelectItem>>([]);
 // 用来存储已上传的文件
 const historyFileList = reactive<Array<FileSelectItem>>([]);
+// 是否显示全部文本查看弹窗
+const showTextModal = ref<boolean>(false);
+// 需要展示的文本详情
+const textDetail = ref<string>('');
 /**
  * 重置表单
  */
@@ -133,8 +139,8 @@ const onShareText = () => {
         (res) => {
           console.log(res);
           pushTextHistory({
-            text: inputText.value as string,
-            uploadTime: new Date().getTime().toString(),
+            value: inputText.value as string,
+            createTime: new Date().getTime(),
           });
           onClearText();
           Toast('共享成功');
@@ -154,7 +160,6 @@ const pushTextHistory = (textHistory: TextHistory) => {
     try {
       uploadTextHistory.unshift({
         ...textHistory,
-        uploadTime: formatDate(Number(textHistory.uploadTime)),
         platform: isiOS() ? 'iOS' : 'android',
         userName: localStorage.getItem('userName') as string,
       });
@@ -165,26 +170,6 @@ const pushTextHistory = (textHistory: TextHistory) => {
       reject(err);
     }
   });
-};
-/**
- * 文本复制
- */
-const onCopyBtn = (item: TextHistory) => {
-  let copyText = item.text;
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(copyText).then(() => {
-      Toast!('复制成功');
-    });
-  } else {
-    copyToClip(copyText);
-  }
-};
-
-/**
- * 点击查看文本内容
- */
-const onViewBtn = (item: TextHistory) => {
-  Toast!('点击查看');
 };
 
 /**
@@ -294,6 +279,22 @@ const onRefresh = (action: any) => {
     reset();
   }
 };
+/**
+ * 点击查看文本详情
+ * @param val
+ */
+const onShowText = (val: any) => {
+  showTextModal.value = true;
+  textDetail.value = val.value;
+  console.log(val);
+};
+/**
+ * 关闭文本弹窗
+ */
+const onHideTextModal = () => {
+  showTextModal.value = false;
+  textDetail.value = '';
+};
 onMounted(() => {
   bus.on('refresh', onRefresh);
   console.log('触发了加载');
@@ -327,24 +328,7 @@ onBeforeUnmount(() => {
       </div>
     </div>
     <div v-if="uploadTextHistory.length > 0" class="inputHistory">
-      <div v-for="(item, index) in uploadTextHistory" :key="index" class="itemBox">
-        <div class="tipInfoBox">
-          <p class="platform" :class="item.platform === 'android' ? 'android' : ''">{{ item.platform || 'unknow' }}</p>
-          <p class="userName">{{ item.userName || 'visionary' }}</p>
-          <p class="uploadTime">{{ item.uploadTime }}</p>
-        </div>
-        <div class="historyBox">
-          <p class="historyText">{{ item.text }}</p>
-          <div class="optsBox">
-            <div class="copyBtn">
-              <p @click="onCopyBtn(item)">复制</p>
-            </div>
-            <div class="viewBtn">
-              <p @click="onViewBtn(item)">查看</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <TextItemVue :text-list="uploadTextHistory" :local="true" @on-show-text="onShowText" />
     </div>
     <div class="title fileTitle">共享文件/图片视频</div>
     <div class="fileBox">
@@ -413,9 +397,9 @@ onBeforeUnmount(() => {
 $padding-lr: 1rem;
 $cardRadius: 8px;
 .uploadBox {
-  padding: 0 $padding-lr;
   font-size: 1.4rem;
   .title {
+    padding: 0 $padding-lr;
     margin: 0 0 1rem 0;
     font-size: 1.3rem;
     font-weight: bold;
@@ -424,6 +408,7 @@ $cardRadius: 8px;
     }
   }
   .inputBox {
+    margin: 0 $padding-lr;
     background-color: #f3f3f3;
     width: calc(100vw - 2 * $padding-lr);
     padding: $padding-lr;
@@ -490,9 +475,9 @@ $cardRadius: 8px;
     }
   }
   .inputHistory {
-    margin-top: 0.5rem;
+    margin: 0.5rem auto;
     background-color: #f3f3f3;
-    width: calc(100vw - 2rem);
+    width: calc(100% - 1rem);
     padding: 1rem 0;
     border-radius: 8px;
     max-height: 21.5rem;
@@ -582,6 +567,7 @@ $cardRadius: 8px;
     }
   }
   .fileBox {
+    padding: 0 $padding-lr;
     .selectBox {
       .itemSelect {
         margin-top: 0.5rem;
@@ -745,8 +731,8 @@ $cardRadius: 8px;
                 p {
                   padding: 0.4rem;
                   font-size: 0.8rem;
-                  height: 0.8rem;
-                  line-height: 0.8rem;
+                  height: 1.5rem;
+                  line-height: 1.5rem;
                 }
               }
               .viewBtn {
@@ -762,8 +748,8 @@ $cardRadius: 8px;
                 p {
                   padding: 0.4rem;
                   font-size: 0.8rem;
-                  height: 0.8rem;
-                  line-height: 0.8rem;
+                  height: 1.5rem;
+                  line-height: 1.5rem;
                 }
               }
             }
