@@ -52,7 +52,7 @@ const getTextList = (back: boolean = false) => {
     .then((res: any) => {
       if (res.data.length > 0) {
         console.log(res.data);
-        textList.value = res.data;
+        textList.value = res.data.sort((a: TextItem, b: TextItem) => new Date(b.name).getTime() - new Date(a.name).getTime());
       } else {
         // 空文件夹则....
         textList.value = [];

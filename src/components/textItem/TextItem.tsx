@@ -119,7 +119,9 @@ export default defineComponent({
      * 点击打开链接
      */
     const onOpenBtn = (item: TextDetail) => {
-      window.open(item.value);
+      const reg = new RegExp('^http(s){0,1}://');
+      if (reg.test(item.value)) window.open(item.value);
+      else window.open(item.value);
     };
 
     /**

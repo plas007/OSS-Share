@@ -49,7 +49,7 @@ const getFileList = (path: string = '', back: boolean = false) => {
     .then((res: any) => {
       if (res.data.length > 0) {
         console.log(res.data);
-        fileList.value = res.data;
+        fileList.value = res.data.sort((a: FileItem, b: FileItem) => new Date(b.name).getTime() - new Date(a.name).getTime());
       } else {
         // 空文件夹则....
         fileList.value = [];
